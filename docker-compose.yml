@@ -9,6 +9,11 @@ services:
       - db
   db:
     image: postgres
+    volumes:
+      - postgres:/var/lib/postgresql/data
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      POSTGRES_USER: storage
+      POSTGRES_PASSWORD: storage
+      POSTGRES_DB: storage
+volumes:
+  postgres:
