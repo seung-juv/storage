@@ -19,6 +19,7 @@ import { StoragesService } from './storages.service';
 import { StorageEntity } from '#models/storages/serializers/storages.serializer';
 import { Response } from 'express';
 import * as fs from 'fs';
+import { Binary } from 'typeorm';
 
 @ApiTags('Storage')
 @Controller('/api/storages')
@@ -50,7 +51,7 @@ export class StoragesController {
   @Get(':id')
   @ApiResponse({
     description: 'Download file',
-    type: Blob,
+    type: Binary,
   })
   async get(@Param('id') id: string, @Res() res: Response) {
     const storageEntity = await this.storagesService.get(id);
