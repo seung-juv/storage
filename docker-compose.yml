@@ -7,6 +7,9 @@ services:
       - '${PORT}:${PORT}'
     depends_on:
       - db
+    restart: unless-stopped
+    volumes:
+      - '${DEST}:${DEST}'
   db:
     image: postgres
     volumes:
@@ -15,5 +18,6 @@ services:
       POSTGRES_USER: storage
       POSTGRES_PASSWORD: storage
       POSTGRES_DB: storage
+    restart: unless-stopped
 volumes:
   postgres:
