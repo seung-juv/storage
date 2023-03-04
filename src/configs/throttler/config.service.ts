@@ -17,9 +17,7 @@ export class ThrottlerConfigService implements ThrottlerOptionsFactory {
     return Number(this.configService.get<number>('throttler.limit'));
   }
 
-  createThrottlerOptions():
-    | Promise<ThrottlerModuleOptions>
-    | ThrottlerModuleOptions {
+  createThrottlerOptions(): ThrottlerModuleOptions {
     return {
       ttl: this.ttl,
       limit: this.limit,

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { StoragesService } from './storages.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { StoragesRepository } from './storages.repository';
+import { TypeOrmExModule } from '#commons/modules/typeorm-ex.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([StoragesRepository])],
+  imports: [TypeOrmExModule.forCustomRepository([StoragesRepository])],
   providers: [StoragesService],
   exports: [StoragesService],
 })

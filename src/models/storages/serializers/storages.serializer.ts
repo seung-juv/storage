@@ -8,6 +8,7 @@ export class StorageEntity extends ModelEntity implements IStorage {
 
   @ApiProperty({ type: String })
   path: string;
+
   @ApiProperty({ type: String })
   filename: string;
 

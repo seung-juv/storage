@@ -6,7 +6,7 @@ import {
 } from 'typeorm';
 import { IStorage } from '../interfaces/storages.interface';
 
-@Entity({ name: 'files' })
+@Entity({ name: 'storages' })
 export class Storage implements IStorage {
   @PrimaryGeneratedColumn('uuid')
   id: string;

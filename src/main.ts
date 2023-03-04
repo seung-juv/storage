@@ -14,7 +14,7 @@ async function bootstrap() {
     .setVersion(process.env.APP_VERSION)
     .build();
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('openapi', app, document);
   // Get app config for cors settings and starting the app.
   const appConfig = app.get<AppConfigService>(AppConfigService);
   app.enableCors();
@@ -31,7 +31,6 @@ async function bootstrap() {
   app.use(helmet.permittedCrossDomainPolicies());
   app.use(helmet.referrerPolicy());
   app.use(helmet.xssFilter());
-  app.setGlobalPrefix('api');
   await app.listen(appConfig.port);
 }
 bootstrap();
