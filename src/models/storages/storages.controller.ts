@@ -4,7 +4,6 @@ import {
   ApiConsumes,
   ApiTags,
   ApiCreatedResponse,
-  ApiResponse,
   ApiOkResponse,
   ApiQuery,
 } from '@nestjs/swagger';
@@ -91,5 +90,10 @@ export class StoragesController {
     }
 
     stream.pipe(res);
+  }
+
+  @Get(':id/info')
+  getInfo(@Param('id') id: string) {
+    return this.storagesService.get(id);
   }
 }
