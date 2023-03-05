@@ -1,15 +1,19 @@
+import * as sharp from 'sharp';
 import {
   ApiBody,
   ApiConsumes,
   ApiTags,
   ApiCreatedResponse,
   ApiResponse,
+  ApiOkResponse,
+  ApiQuery,
 } from '@nestjs/swagger';
 import {
   Controller,
   Get,
   Param,
   Post,
+  Query,
   Res,
   UploadedFile,
   UseInterceptors,
@@ -49,15 +53,43 @@ export class StoragesController {
   }
 
   @Get(':id')
-  @ApiResponse({
+  @ApiOkResponse({
     description: 'Download file',
     type: Binary,
   })
-  async get(@Param('id') id: string, @Res() res: Response) {
+  @ApiQuery({ name: 'w', type: 'string', required: false, description: '넓이' })
+  @ApiQuery({ name: 'h', type: 'string', required: false, description: '높이' })
+  async get(
+    @Param('id') id: string,
+    @Query('w') width: number,
+    @Query('h') height: number,
+    @Res() res: Response,
+  ) {
     const storageEntity = await this.storagesService.get(id);
     const stream = fs.createReadStream(storageEntity.path);
 
     res.setHeader('Content-Type', storageEntity.mimetype);
+    if (width || height) {
+      const metadata = {
+        width: Number(width),
+        height: Number(height),
+      };
+      if (!width || !height) {
+        const originMetadata = await sharp(storageEntity.path).metadata();
+        if (!width) metadata.width = originMetadata.width;
+        if (!height) metadata.height = originMetadata.height;
+      }
+      const path = `${storageEntity.path}_${metadata.width}x${metadata.height}`;
+      const existsSync = fs.existsSync(path);
+      if (!existsSync) {
+        await sharp(storageEntity.path)
+          .resize(metadata.width, metadata.height)
+          .toFile(path);
+      }
+      fs.createReadStream(path).pipe(res);
+      return;
+    }
+
     stream.pipe(res);
   }
 }
