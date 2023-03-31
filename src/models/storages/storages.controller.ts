@@ -19,7 +19,6 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { StoragesService } from './storages.service';
-import { StorageEntity } from '#models/storages/serializers/storages.serializer';
 import { Response } from 'express';
 import * as fs from 'fs';
 import { Binary } from 'typeorm';
@@ -46,7 +45,7 @@ export class StoragesController {
   @UseInterceptors(FileInterceptor('file'))
   @ApiCreatedResponse({
     description: 'The record has been successfully created.',
-    type: StorageEntity,
+    type: StorageResponseDto,
   })
   create(
     @UploadedFile() file: Express.Multer.File,
@@ -96,6 +95,10 @@ export class StoragesController {
   }
 
   @Get(':id/info')
+  @ApiOkResponse({
+    description: 'The record has been successfully get.',
+    type: StorageResponseDto,
+  })
   getInfo(@Param('id') id: string): Promise<StorageResponseDto> {
     return this.storagesService.get(id);
   }
