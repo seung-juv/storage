@@ -23,6 +23,7 @@ import { StorageEntity } from '#models/storages/serializers/storages.serializer'
 import { Response } from 'express';
 import * as fs from 'fs';
 import { Binary } from 'typeorm';
+import { StorageResponseDto } from '#models/storages/dtos/storages.dto';
 
 @ApiTags('Storage')
 @Controller('/api/storages')
@@ -47,7 +48,9 @@ export class StoragesController {
     description: 'The record has been successfully created.',
     type: StorageEntity,
   })
-  create(@UploadedFile() file: Express.Multer.File) {
+  create(
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<StorageResponseDto> {
     return this.storagesService.create(file);
   }
 
@@ -64,24 +67,24 @@ export class StoragesController {
     @Query('h') height: number,
     @Res() res: Response,
   ) {
-    const storageEntity = await this.storagesService.get(id);
-    const stream = fs.createReadStream(storageEntity.path);
+    const storageResponseDto = await this.storagesService.get(id);
+    const stream = fs.createReadStream(storageResponseDto.path);
 
-    res.setHeader('Content-Type', storageEntity.mimetype);
+    res.setHeader('Content-Type', storageResponseDto.mimetype);
     if (width || height) {
       const metadata = {
         width: Number(width),
         height: Number(height),
       };
       if (!width || !height) {
-        const originMetadata = await sharp(storageEntity.path).metadata();
+        const originMetadata = await sharp(storageResponseDto.path).metadata();
         if (!width) metadata.width = originMetadata.width;
         if (!height) metadata.height = originMetadata.height;
       }
-      const path = `${storageEntity.path}_${metadata.width}x${metadata.height}`;
+      const path = `${storageResponseDto.path}_${metadata.width}x${metadata.height}`;
       const existsSync = fs.existsSync(path);
       if (!existsSync) {
-        await sharp(storageEntity.path)
+        await sharp(storageResponseDto.path)
           .resize(metadata.width, metadata.height)
           .toFile(path);
       }
@@ -93,7 +96,7 @@ export class StoragesController {
   }
 
   @Get(':id/info')
-  getInfo(@Param('id') id: string) {
+  getInfo(@Param('id') id: string): Promise<StorageResponseDto> {
     return this.storagesService.get(id);
   }
 }
